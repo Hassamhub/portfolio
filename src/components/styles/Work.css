@@ -175,7 +175,7 @@
   .work-box { gap: 20px; }
 }
 
-/* Mobile adjustments (GSAP controls scroll, no swipe) */
+/* -------------------- Mobile Adjustments (GSAP Horizontal Scroll Active) -------------------- */
 @media only screen and (max-width: 768px) {
   .work-box {
     width: 280px;
@@ -189,5 +189,15 @@
     font-size: 32px;
     margin-top: 50px;
     margin-bottom: 20px;
+  }
+
+  /* Ensure GSAP works properly on mobile */
+  .work-flex {
+    overflow-x: hidden; /* Prevent native horizontal swipe */
+    height: 100%;
+  }
+
+  .work-section {
+    height: 100vh; /* Keep pinning effect active */
   }
 }

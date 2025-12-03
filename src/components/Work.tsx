@@ -26,7 +26,6 @@ const Work = () => {
     const setupScroll = () => {
       ScrollTrigger.getAll().forEach(st => st.kill());
 
-      // Calculate total width of all boxes
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
         const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
@@ -37,13 +36,9 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
-      // Set section height for pinning
+      // Apply GSAP horizontal scroll on all devices
       section.style.height = "100vh";
 
-      // Reset transform
-      flex.style.transform = "translateX(0)";
-
-      // Horizontal scroll animation with GSAP (desktop & mobile)
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
@@ -55,7 +50,8 @@ const Work = () => {
           pin: true,
           pinSpacing: true,
           invalidateOnRefresh: true,
-          anticipatePin: 1,
+          // Allow touch scroll on mobile while pinning
+          preventOverlaps: true,
         },
       });
     };
