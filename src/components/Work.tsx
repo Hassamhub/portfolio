@@ -7,7 +7,6 @@ import "./styles/Work.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
-  // 1. Explicit Types for TypeScript to prevent 'never' error
   const sectionRef = useRef<HTMLDivElement>(null);
   const flexRef = useRef<HTMLDivElement>(null);
 
@@ -23,35 +22,65 @@ const Work = () => {
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const flex = flexRef.current;
-
     if (!section || !flex) return;
 
     let ctx = gsap.context(() => {
-      // 2. We use a function to calculate distance so it works even if
-      // the page starts hidden or with a loader.
+      // --------------------------------------------------------
+      // THE FIX: PRECISE CALCULATION + SAFETY BRAKE
+      // --------------------------------------------------------
       const getScrollAmount = () => {
-        // "scrollWidth" is the total length of the strip
-        // "innerWidth" is the screen width
-        // We subtract them to know how far to move left
-        let amount = flex.scrollWidth - window.innerWidth;
-        return -(amount); 
+        // Ensure we get a valid width even if loading screen is active
+        let raceWidth = window.innerWidth;
+        if (raceWidth === 0) raceWidth = document.documentElement.clientWidth;
+
+        const isMobile = raceWidth <= 768;
+
+        // 1. Define sizes exactly as they appear in CSS
+        const cardWidth = isMobile ? (raceWidth * 0.85) : 600;
+        const cardGap = isMobile ? 20 : 0; // Mobile has 20px gap, Desktop has 0 (borders)
+        const containerPaddingLeft = 20; // Mobile padding-left is 20px
+
+        // 2. Calculate the TRUE width of the content strip
+        // (6 Cards) + (5 Gaps) + (Initial Padding)
+        const totalContentWidth = 
+          (projects.length * cardWidth) + 
+          ((projects.length - 1) * cardGap) + 
+          containerPaddingLeft;
+
+        // 3. Calculate Scroll Distance
+        // We want to move left until the end of content aligns with right of screen.
+        // Formula: Content Width - Visible Screen Width
+        let distance = totalContentWidth - raceWidth;
+
+        // 4. SAFETY BRAKE (Critical Fix)
+        // On mobile, we reduce the distance by 50px to stop slightly EARLY.
+        // This ensures we never scroll into the empty black void.
+        if (isMobile) {
+            distance = distance - 50; 
+        }
+
+        // Return negative value to move left
+        return -Math.max(0, distance);
       };
 
-      gsap.to(flex, {
-        // FIXED: Use a function () => ... here. 
-        // This forces GSAP to re-calculate the width every time the page refreshes/resizes.
-        x: () => getScrollAmount(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          // FIXED: Recalculate the end point dynamically too
-          end: () => `+=${Math.abs(getScrollAmount())}`,
-          pin: true,
-          scrub: 1,
-          invalidateOnRefresh: true, // IMPORTANT: invalidates values on resize to fix mobile glitches
-        },
-      });
+      const scrollDistance = getScrollAmount;
+
+      gsap.fromTo(
+        flex,
+        { x: 0 },
+        {
+          x: scrollDistance,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top", 
+            end: () => `+=${Math.abs(scrollDistance())}`, // Duration matches distance
+            pin: true,
+            scrub: 1,
+            invalidateOnRefresh: true, 
+          },
+        }
+      );
     }, section);
 
     return () => ctx.revert();
