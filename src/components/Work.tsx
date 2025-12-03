@@ -24,10 +24,8 @@ const Work = () => {
     if (!section || !flex || boxes.length === 0) return;
 
     const setupScroll = () => {
-      // Kill previous ScrollTriggers
       ScrollTrigger.getAll().forEach((st) => st.kill());
 
-      // Total width of all boxes including margins
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
         const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
@@ -36,19 +34,18 @@ const Work = () => {
 
       flex.style.width = `${totalWidth}px`;
 
-      const scrollDistance = totalWidth - section.clientWidth;
+      let scrollDistance = totalWidth - section.clientWidth;
 
-      // Reset transform
-      flex.style.transform = "translateX(0px)";
-
-      // Set height only for mobile, keep desktop 100vh
+      // On mobile, make sure scrollDistance is enough
       if (window.innerWidth <= 768) {
+        scrollDistance = Math.max(scrollDistance, window.innerWidth * 1.2); // ensure some scroll
         section.style.height = `${scrollDistance + window.innerHeight}px`;
       } else {
         section.style.height = "100vh";
       }
 
-      // GSAP horizontal scroll
+      flex.style.transform = "translateX(0px)";
+
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
