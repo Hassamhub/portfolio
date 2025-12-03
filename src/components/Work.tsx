@@ -8,42 +8,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
   const projects = [
-    {
-      name: "Cassie.codes",
-      category: "Personal portfolio",
-      tools: "React, Three.js, GSAP",
-      image: "/images/cassie.png",
-    },
-    {
-      name: "Patch Specialist",
-      category: "Business / E-commerce Website",
-      tools: "Next.js, Stripe API",
-      image: "/images/patchspecialist.com.png",
-    },
-    {
-      name: "Landing Page",
-      category: "Modern Frontend",
-      tools: "HTML, CSS, GSAP",
-      image: "/images/food.png",
-    },
-    {
-      name: "Energy Monitoring System",
-      category: "Dashboard / IoT Monitoring",
-      tools: "Next.js, MongoDB, React",
-      image: "/images/EMS.jpeg",
-    },
-    {
-      name: "Qari For Kids",
-      category: "Landing Page / Front-end Website",
-      tools: "HTML, CSS, JavaScript",
-      image: "/images/Qari.png",
-    },
-    {
-      name: "Spelinx – Premium Gaming Platform",
-      category: "Gaming Platform",
-      tools: "Next.js (React), TypeScript, CSS, MongoDB",
-      image: "/images/spel2.png",
-    },
+    { name: "Cassie.codes", category: "Personal portfolio", tools: "React, Three.js, GSAP", image: "/images/cassie.png" },
+    { name: "Patch Specialist", category: "Business / E-commerce Website", tools: "Next.js, Stripe API", image: "/images/patchspecialist.com.png" },
+    { name: "Landing Page", category: "Modern Frontend", tools: "HTML, CSS, GSAP", image: "/images/food.png" },
+    { name: "Energy Monitoring System", category: "Dashboard / IoT Monitoring", tools: "Next.js, MongoDB, React", image: "/images/EMS.jpeg" },
+    { name: "Qari For Kids", category: "Landing Page / Front-end Website", tools: "HTML, CSS, JavaScript", image: "/images/Qari.png" },
+    { name: "Spelinx – Premium Gaming Platform", category: "Gaming Platform", tools: "Next.js (React), TypeScript, CSS, MongoDB", image: "/images/spel2.png" },
   ];
 
   useEffect(() => {
@@ -54,7 +24,7 @@ const Work = () => {
     if (!section || !flex || boxes.length === 0) return;
 
     const setupScroll = () => {
-      // Kill previous triggers
+      // Kill previous ScrollTriggers
       ScrollTrigger.getAll().forEach((st) => st.kill());
 
       // Total width of all boxes including margins
@@ -68,16 +38,24 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
-      // Reset transforms for mobile refresh
+      // Reset transform
       flex.style.transform = "translateX(0px)";
 
+      // Set height only for mobile, keep desktop 100vh
+      if (window.innerWidth <= 768) {
+        section.style.height = `${scrollDistance + window.innerHeight}px`;
+      } else {
+        section.style.height = "100vh";
+      }
+
+      // GSAP horizontal scroll
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${scrollDistance}`,
+          end: `+=${scrollDistance}`,
           scrub: 0.5,
           pin: true,
           pinSpacing: true,
@@ -88,7 +66,6 @@ const Work = () => {
     };
 
     setupScroll();
-
     window.addEventListener("resize", setupScroll);
 
     return () => {
@@ -103,7 +80,6 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
-
         <div className="work-flex">
           {projects.map((project, index) => (
             <div className="work-box" key={index}>
