@@ -53,36 +53,12 @@ const Work = () => {
       document.querySelectorAll(".work-box")
     ) as HTMLElement[];
 
-    if (!section || !flex) return;
+    if (!section || !flex || boxes.length === 0) return;
 
     const setup = () => {
-      // Kill old triggers
       ScrollTrigger.getAll().forEach((st) => st.kill());
 
-      // -------------------------
-      // 📱 MOBILE BEHAVIOR (<900px)
-      // -------------------------
-      if (window.innerWidth < 900) {
-        // expand flex horizontally (same as desktop width calc)
-        const totalWidth = boxes.reduce((acc, box) => {
-          const style = getComputedStyle(box);
-          const margin =
-            parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-          return acc + box.offsetWidth + margin;
-        }, 0);
-
-        flex.style.width = `${totalWidth}px`;
-
-        // IMPORTANT: no overflow-x on the section (let the page continue)
-        section.style.overflow = "visible";
-
-        // no pinning, no horizontal scroll by GSAP
-        return;
-      }
-
-      // -------------------------
-      // 🖥 DESKTOP — GSAP horizontal scrolling
-      // -------------------------
+      // Calculate full width (same behaviour on mobile + desktop)
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
         const margin =
@@ -94,6 +70,7 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
+      // Horizontal GSAP scroll on ALL devices
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
@@ -103,6 +80,7 @@ const Work = () => {
           end: `+=${scrollDistance}`,
           scrub: true,
           pin: true,
+          pinSpacing: true,
         },
       });
     };
