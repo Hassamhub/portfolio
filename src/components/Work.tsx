@@ -1,12 +1,15 @@
-import "./styles/Work.css";
-import WorkImage from "./WorkImage";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import WorkImage from "./WorkImage";
+import "./styles/Work.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const flexRef = useRef<HTMLDivElement>(null);
+
   const projects = [
     { name: "Cassie.codes", category: "Personal portfolio", tools: "React, Three.js, GSAP", image: "/images/cassie.png" },
     { name: "Patch Specialist", category: "Business / E-commerce Website", tools: "Next.js, Stripe API", image: "/images/patchspecialist.com.png" },
@@ -17,61 +20,43 @@ const Work = () => {
   ];
 
   useEffect(() => {
-    const section = document.querySelector(".work-section") as HTMLElement;
-    const flex = document.querySelector(".work-flex") as HTMLElement;
-    const boxes = Array.from(document.querySelectorAll(".work-box")) as HTMLElement[];
+    const section = sectionRef.current;
+    const flex = flexRef.current;
 
-    if (!section || !flex || boxes.length === 0) return;
+    if (!section || !flex) return;
 
-    const setupScroll = () => {
-      ScrollTrigger.getAll().forEach(st => st.kill());
+    let ctx = gsap.context(() => {
+      // 1. Calculate the real distance to scroll
+      const getScrollAmount = () => {
+        return -(flex.scrollWidth - window.innerWidth);
+      };
 
-      const totalWidth = boxes.reduce((acc, box) => {
-        const style = getComputedStyle(box);
-        const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-        return acc + box.offsetWidth + margin;
-      }, 0);
-
-      flex.style.width = `${totalWidth}px`;
-
-      const scrollDistance = totalWidth - section.clientWidth;
-
-      // Apply GSAP horizontal scroll on all devices
-      section.style.height = "100vh";
-
+      // 2. Create the horizontal scroll animation
+      // (Variable removed to fix 'never read' error)
       gsap.to(flex, {
-        x: -scrollDistance,
+        x: getScrollAmount,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${scrollDistance}`,
-          scrub: 0.5,
+          end: () => `+=${flex.scrollWidth}`, // Scroll duration matches content width
           pin: true,
-          pinSpacing: true,
-          invalidateOnRefresh: true,
-          // Allow touch scroll on mobile while pinning
-          preventOverlaps: true,
+          scrub: 1, 
+          invalidateOnRefresh: true, 
         },
       });
-    };
+    }, section);
 
-    setupScroll();
-    window.addEventListener("resize", setupScroll);
-
-    return () => {
-      window.removeEventListener("resize", setupScroll);
-      ScrollTrigger.getAll().forEach(st => st.kill());
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="work-section" id="work">
+    <div className="work-section" id="work" ref={sectionRef}>
       <div className="work-container section-container">
         <h2>
           My <span>Work</span>
         </h2>
-        <div className="work-flex">
+        <div className="work-flex" ref={flexRef}>
           {projects.map((project, index) => (
             <div className="work-box" key={index}>
               <div className="work-info">

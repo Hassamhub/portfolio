@@ -1,8 +1,13 @@
 /* -------------------- Work Section -------------------- */
 .work-section h2 {
-  margin-top: 100px;
+  margin-top: 50px; /* Reduced top margin so it fits better */
   font-size: 70px;
   font-weight: 500;
+  margin-left: 5vw; 
+  position: absolute; /* Keep title fixed at top */
+  top: 0;
+  left: 0;
+  z-index: 5;
 }
 .work-section h2 > span {
   color: var(--accentColor);
@@ -12,12 +17,16 @@
   transition: 0s;
   box-sizing: border-box;
   will-change: transform;
-
-  /* Allow vertical scroll while GSAP controls horizontal movement */
-  touch-action: pan-y;
-  overflow-x: hidden;
-  overflow-y: auto;
+  
+  /* Dynamic height to fix mobile jumping */
   height: 100vh;
+  height: 100dvh; 
+  
+  overflow: hidden; 
+  width: 100%;
+  position: relative;
+  touch-action: pan-y;
+  background-color: var(--backgroundColor);
 }
 
 .work-container {
@@ -26,44 +35,52 @@
   flex-direction: column;
   height: 100%;
   align-content: stretch;
+  justify-content: center; /* Centers cards vertically in the screen */
 }
 
 .work-flex {
-  width: 100%;
+  width: max-content; 
   display: flex;
-  height: 100%;
-  margin-left: -80px;
-  padding-right: 120px;
+  height: 70%; 
+  padding-left: 5vw; 
+  padding-right: 10vw;
   position: relative;
-  flex-wrap: nowrap;
+  flex-wrap: nowrap; 
+  align-items: center; /* Ensures cards are centered vertically inside the strip */
 }
 
 .work-box {
-  padding: 80px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   width: 600px;
   box-sizing: border-box;
   border-right: 1px solid #363636;
-  flex-shrink: 0;
-  gap: 50px;
-  justify-content: start;
+  flex-shrink: 0; 
+  gap: 30px;
+  justify-content: center;
+  height: 100%;
+  /* Ensure cards are visible */
+  background-color: transparent; 
 }
 
+/* Layout for Desktop */
 .work-flex .work-box:nth-child(even) {
   flex-direction: column-reverse;
 }
 
+/* ---------------------------------------------------- */
+/* CRITICAL FIX HERE: CHANGED 50000vw TO 100%           */
+/* ---------------------------------------------------- */
 .work-flex::before,
 .work-flex::after {
   content: "";
-  width: calc(50000vw);
+  width: 100%; /* Matches the width of your actual content */
   height: 1px;
   background-color: #363636;
   position: absolute;
-  left: 50%;
+  left: 0; 
   top: 0;
-  transform: translateX(-50%);
 }
 .work-flex::after {
   top: 100%;
@@ -104,9 +121,8 @@
   display: flex;
   width: 100%;
   justify-content: center;
-}
-.work-image-in {
-  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .work-link {
@@ -133,71 +149,50 @@
   opacity: 1;
 }
 
-.work-image video {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: #000;
-  object-fit: cover;
-}
-
 .work-image img {
   max-width: 100%;
   max-height: 350px;
+  object-fit: cover;
+  width: 100%;
 }
 
 /* -------------------- Responsive Adjustments -------------------- */
 @media only screen and (max-height: 900px) {
   .work-image img { max-height: 250px; }
-  .work-box { padding-top: 40px; padding-bottom: 40px; }
-  .work-section h2 { font-size: 60px; margin-bottom: 30px; margin-top: 70px; }
+  .work-box { padding-top: 20px; padding-bottom: 20px; }
+  .work-section h2 { font-size: 60px; }
 }
 
 @media only screen and (max-width: 1400px) {
   .work-title h3 { font-size: 35px; }
   .work-info p { font-size: 13px; }
   .work-info h4 { font-size: 15px; }
-  .work-box { width: 450px; padding: 50px; }
-  .work-flex { margin-left: -50px; padding-right: 75px; }
+  .work-box { width: 450px; padding: 30px; }
   .work-section h2 { font-size: 50px; }
 }
 
-@media only screen and (max-width: 1025px) {
-  .work-container { align-content: normal; }
-  .work-flex { height: auto; }
-}
-
-@media only screen and (max-height: 650px) {
-  .work-image img { max-height: 200px; }
-  .work-section h2 { font-size: 40px; margin-bottom: 20px; }
-  .work-box { gap: 20px; }
-}
-
-/* -------------------- Mobile Adjustments (GSAP Horizontal Scroll Active) -------------------- */
 @media only screen and (max-width: 768px) {
+  .work-section h2 {
+    font-size: 32px;
+    margin-left: 20px;
+    margin-top: 20px;
+    position: relative; /* On mobile, let title scroll naturally if needed, or keep absolute */
+  }
+
+  .work-flex {
+    height: 70%;
+    padding-left: 20px;
+  }
+
   .work-box {
-    width: 280px;
+    width: 85vw; /* CRITICAL MOBILE WIDTH */
     padding: 20px;
     gap: 15px;
     border-right: 1px solid #363636;
-    margin: 0;
+    margin-right: 15px; 
   }
 
-  .work-section h2 {
-    font-size: 32px;
-    margin-top: 50px;
-    margin-bottom: 20px;
-  }
-
-  /* Ensure GSAP works properly on mobile */
-  .work-flex {
-    overflow-x: hidden; /* Prevent native horizontal swipe */
-    height: 100%;
-  }
-
-  .work-section {
-    height: 100vh; /* Keep pinning effect active */
+  .work-flex .work-box:nth-child(even) {
+    flex-direction: column;
   }
 }
