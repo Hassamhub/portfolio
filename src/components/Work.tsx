@@ -54,7 +54,6 @@ const Work = () => {
     if (!section || !flex || boxes.length === 0) return;
 
     const setupScroll = () => {
-      // Kill previous ScrollTriggers
       ScrollTrigger.getAll().forEach((st) => st.kill());
 
       // Calculate total width including margins
@@ -68,7 +67,7 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
-      // GSAP horizontal scroll for all devices
+      // Horizontal scroll GSAP
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
@@ -80,6 +79,11 @@ const Work = () => {
           pin: true,
           pinSpacing: true,
           invalidateOnRefresh: true,
+          anticipatePin: 1,
+          // Mobile-friendly touch support
+          onUpdate: (self) => {
+            flex.style.transform = `translateX(${-scrollDistance * self.progress}px)`;
+          },
         },
       });
     };
