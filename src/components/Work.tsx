@@ -7,6 +7,7 @@ import "./styles/Work.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
+  // FIXED: Added <HTMLDivElement> back so TypeScript knows these are HTML elements
   const sectionRef = useRef<HTMLDivElement>(null);
   const flexRef = useRef<HTMLDivElement>(null);
 
@@ -23,32 +24,34 @@ const Work = () => {
     const section = sectionRef.current;
     const flex = flexRef.current;
 
+    // Safety check: ensure elements exist before running animation
     if (!section || !flex) return;
 
     let ctx = gsap.context(() => {
-      // 1. Calculate the exact distance to scroll
-      // We subtract window.innerWidth so the last card stops exactly at the screen edge
+      // Calculate scroll distance based on the container's natural width
+      // We use flex.scrollWidth (total width) minus window.innerWidth (visible width)
       const getScrollAmount = () => {
         return -(flex.scrollWidth - window.innerWidth);
       };
 
-      // 2. Create the horizontal scroll animation
+      const scrollDistance = getScrollAmount();
+
       gsap.to(flex, {
-        x: getScrollAmount,
+        x: scrollDistance,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${flex.scrollWidth}`, // The scroll length matches the content width
+          end: () => `+=${Math.abs(scrollDistance)}`,
           pin: true,
-          scrub: 1, // Adds a 1-second delay for a smooth "weighty" feel
-          invalidateOnRefresh: true, // Recalculates completely on mobile resize
+          scrub: 1,
+          invalidateOnRefresh: true,
         },
       });
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [projects]);
 
   return (
     <div className="work-section" id="work" ref={sectionRef}>
@@ -56,7 +59,6 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
-        
         <div className="work-flex" ref={flexRef}>
           {projects.map((project, index) => (
             <div className="work-box" key={index}>
