@@ -69,7 +69,7 @@ function SphereGeo({
       linearDamping={0.75}
       angularDamping={0.15}
       friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
+      position={[r(20), r(20) - 25, r(20) - 10] as [number, number, number]}
       ref={api}
       colliders={false}
     >
@@ -125,32 +125,15 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
 }
 
 const TechStack = () => {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive] = useState(true); // always active
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
-      setIsActive(scrollY > threshold);
-    };
-    document.querySelectorAll(".header a").forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", () => {
-        const interval = setInterval(() => {
-          handleScroll();
-        }, 10);
-        setTimeout(() => {
-          clearInterval(interval);
-        }, 1000);
-      });
-    });
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   const materials = useMemo(() => {
     return textures.map(
       (texture) =>
@@ -166,16 +149,42 @@ const TechStack = () => {
     );
   }, []);
 
+  // TypeScript-safe camera tuple
+  const cameraPosition: [number, number, number] =
+    windowWidth < 900 ? [0, 0, 28] : [0, 0, 20];
+  const cameraFov = windowWidth < 900 ? 50 : 32.5;
+
   return (
-    <div className="techstack">
-      <h2> My Techstack</h2>
+    <div
+      className="techstack"
+      style={{
+        width: "100%",
+        minHeight: "70vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "hidden",
+        position: "relative",
+        padding: "40px 20px",
+      }}
+    >
+      <h2
+        style={{
+          marginBottom: "20px",
+          fontSize: windowWidth < 600 ? "28px" : "40px",
+          textAlign: "center",
+        }}
+      >
+        My Techstack
+      </h2>
 
       <Canvas
         shadows
-        gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
-        camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
+        gl={{ alpha: true, stencil: false, depth: false, antialias: true }}
+        camera={{ position: cameraPosition, fov: cameraFov, near: 1, far: 100 }}
         onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
-        className="tech-canvas"
+        style={{ width: "100%", height: windowWidth < 900 ? "60vh" : "100vh" }}
       >
         <ambientLight intensity={1} />
         <spotLight
