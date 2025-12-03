@@ -1,3 +1,4 @@
+/* -------------------- Work Section -------------------- */
 .work-section h2 {
   margin-top: 100px;
   font-size: 70px;
@@ -6,18 +7,19 @@
 .work-section h2 > span {
   color: var(--accentColor);
 }
+
 .work-section {
   transition: 0s;
   box-sizing: border-box;
   will-change: transform;
 
-  /* 🔥 Mobile touch fix */
+  /* Mobile touch fix */
   touch-action: pan-y;
   overflow-x: hidden;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   height: 100vh;
 }
+
 .work-container {
   margin: auto;
   display: flex;
@@ -25,6 +27,7 @@
   height: 100%;
   align-content: stretch;
 }
+
 .work-flex {
   width: 100%;
   display: flex;
@@ -33,7 +36,11 @@
   padding-right: 120px;
   position: relative;
   flex-wrap: nowrap;
+
+  /* Mobile scroll snapping */
+  scroll-snap-type: x mandatory;
 }
+
 .work-box {
   padding: 80px;
   display: flex;
@@ -44,10 +51,15 @@
   flex-shrink: 0;
   gap: 50px;
   justify-content: start;
+
+  /* Mobile scroll snapping */
+  scroll-snap-align: start;
 }
+
 .work-flex .work-box:nth-child(even) {
   flex-direction: column-reverse;
 }
+
 .work-flex::before,
 .work-flex::after {
   content: "";
@@ -62,6 +74,7 @@
 .work-flex::after {
   top: 100%;
 }
+
 .work-title {
   justify-content: space-between;
   display: flex;
@@ -92,6 +105,7 @@
 .work-info > p {
   width: 90%;
 }
+
 .work-image {
   display: flex;
   width: 100%;
@@ -100,6 +114,7 @@
 .work-image-in {
   position: relative;
 }
+
 .work-link {
   position: absolute;
   bottom: 10px;
@@ -123,6 +138,7 @@
 .work-image a:hover .work-link {
   opacity: 1;
 }
+
 .work-image video {
   position: absolute;
   width: 100%;
@@ -132,10 +148,13 @@
   background-color: #000;
   object-fit: cover;
 }
+
 .work-image img {
   max-width: 100%;
   max-height: 350px;
 }
+
+/* -------------------- Responsive Adjustments -------------------- */
 @media only screen and (max-height: 900px) {
   .work-image img {
     max-height: 250px;
@@ -150,6 +169,7 @@
     margin-top: 70px;
   }
 }
+
 @media only screen and (max-width: 1400px) {
   .work-title h3 {
     font-size: 35px;
@@ -172,14 +192,13 @@
     font-size: 50px;
   }
 }
-@media only screen and (max-width: 1400px) {
-  .work-box {
-    width: 350px;
-    padding: 30px;
+
+@media only screen and (max-width: 1025px) {
+  .work-container {
+    align-content: normal;
   }
   .work-flex {
-    margin-left: -30px;
-    padding-right: 45px;
+    height: auto;
   }
 }
 
@@ -196,20 +215,14 @@
   }
 }
 
-@media only screen and (max-width: 1025px) {
-  .work-container {
-    align-content: normal;
-  }
-  .work-flex {
-    height: auto;
-  }
-}
-
+/* -------------------- Mobile Touch Fix -------------------- */
 @media only screen and (max-width: 768px) {
   .work-flex {
     margin-left: 0;
     padding-right: 0;
-    overflow-x: visible;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 
   .work-box {
@@ -222,7 +235,7 @@
   }
 
   .work-section {
-    height: auto; /* JS will control exact height */
+    height: auto; /* JS controls exact height */
     overflow-x: visible;
   }
 

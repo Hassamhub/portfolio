@@ -24,7 +24,7 @@ const Work = () => {
     if (!section || !flex || boxes.length === 0) return;
 
     const setupScroll = () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+      ScrollTrigger.getAll().forEach(st => st.kill());
 
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
@@ -34,32 +34,38 @@ const Work = () => {
 
       flex.style.width = `${totalWidth}px`;
 
-      let scrollDistance = totalWidth - section.clientWidth;
+      const scrollDistance = totalWidth - section.clientWidth;
 
-      // 🔥 FIX: Ensure enough vertical height on mobile
-      if (window.innerWidth <= 768) {
-        const minHeight = scrollDistance + window.innerHeight * 1.5; // more scroll space
-        section.style.height = `${minHeight}px`;
-      } else {
+      if (window.innerWidth > 768) {
+        // Desktop: GSAP horizontal scroll
         section.style.height = "100vh";
+
+        gsap.to(flex, {
+          x: -scrollDistance,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () => `+=${scrollDistance}`,
+            scrub: 0.5,
+            pin: true,
+            pinSpacing: true,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Reset mobile scroll properties
+        flex.style.overflowX = "visible";
+        flex.style.removeProperty("scroll-behavior");
+        flex.style.removeProperty("-webkit-overflow-scrolling");
+      } else {
+        // Mobile: native horizontal swipe
+        section.style.height = "auto";
+        flex.style.transform = "translateX(0)";
+        flex.style.overflowX = "auto";
+        flex.style.scrollBehavior = "smooth";
+        (flex.style as any).webkitOverflowScrolling = "touch"; // TS-safe
       }
-
-      flex.style.transform = "translateX(0px)";
-
-      gsap.to(flex, {
-        x: -scrollDistance,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${scrollDistance}`,
-          scrub: 0.5,
-          pin: true,
-          pinSpacing: true,
-          invalidateOnRefresh: true,
-          anticipatePin: 1,
-        },
-      });
     };
 
     setupScroll();
@@ -67,7 +73,7 @@ const Work = () => {
 
     return () => {
       window.removeEventListener("resize", setupScroll);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+      ScrollTrigger.getAll().forEach(st => st.kill());
     };
   }, []);
 
