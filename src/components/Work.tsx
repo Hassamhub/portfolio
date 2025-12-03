@@ -26,6 +26,7 @@ const Work = () => {
     const setupScroll = () => {
       ScrollTrigger.getAll().forEach(st => st.kill());
 
+      // Calculate total width of all boxes
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
         const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
@@ -36,36 +37,27 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
-      if (window.innerWidth > 768) {
-        // Desktop: GSAP horizontal scroll
-        section.style.height = "100vh";
+      // Set section height for pinning
+      section.style.height = "100vh";
 
-        gsap.to(flex, {
-          x: -scrollDistance,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: () => `+=${scrollDistance}`,
-            scrub: 0.5,
-            pin: true,
-            pinSpacing: true,
-            invalidateOnRefresh: true,
-          },
-        });
+      // Reset transform
+      flex.style.transform = "translateX(0)";
 
-        // Reset mobile scroll properties
-        flex.style.overflowX = "visible";
-        flex.style.removeProperty("scroll-behavior");
-        flex.style.removeProperty("-webkit-overflow-scrolling");
-      } else {
-        // Mobile: native horizontal swipe
-        section.style.height = "auto";
-        flex.style.transform = "translateX(0)";
-        flex.style.overflowX = "auto";
-        flex.style.scrollBehavior = "smooth";
-        (flex.style as any).webkitOverflowScrolling = "touch"; // TS-safe
-      }
+      // Horizontal scroll animation with GSAP (desktop & mobile)
+      gsap.to(flex, {
+        x: -scrollDistance,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${scrollDistance}`,
+          scrub: 0.5,
+          pin: true,
+          pinSpacing: true,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+      });
     };
 
     setupScroll();

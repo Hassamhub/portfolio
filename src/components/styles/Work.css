@@ -13,7 +13,7 @@
   box-sizing: border-box;
   will-change: transform;
 
-  /* Mobile touch fix */
+  /* Allow vertical scroll while GSAP controls horizontal movement */
   touch-action: pan-y;
   overflow-x: hidden;
   overflow-y: auto;
@@ -36,9 +36,6 @@
   padding-right: 120px;
   position: relative;
   flex-wrap: nowrap;
-
-  /* Mobile scroll snapping */
-  scroll-snap-type: x mandatory;
 }
 
 .work-box {
@@ -51,9 +48,6 @@
   flex-shrink: 0;
   gap: 50px;
   justify-content: start;
-
-  /* Mobile scroll snapping */
-  scroll-snap-align: start;
 }
 
 .work-flex .work-box:nth-child(even) {
@@ -156,87 +150,39 @@
 
 /* -------------------- Responsive Adjustments -------------------- */
 @media only screen and (max-height: 900px) {
-  .work-image img {
-    max-height: 250px;
-  }
-  .work-box {
-    padding-top: 40px;
-    padding-bottom: 40px;
-  }
-  .work-section h2 {
-    font-size: 60px;
-    margin-bottom: 30px;
-    margin-top: 70px;
-  }
+  .work-image img { max-height: 250px; }
+  .work-box { padding-top: 40px; padding-bottom: 40px; }
+  .work-section h2 { font-size: 60px; margin-bottom: 30px; margin-top: 70px; }
 }
 
 @media only screen and (max-width: 1400px) {
-  .work-title h3 {
-    font-size: 35px;
-  }
-  .work-info p {
-    font-size: 13px;
-  }
-  .work-info h4 {
-    font-size: 15px;
-  }
-  .work-box {
-    width: 450px;
-    padding: 50px;
-  }
-  .work-flex {
-    margin-left: -50px;
-    padding-right: 75px;
-  }
-  .work-section h2 {
-    font-size: 50px;
-  }
+  .work-title h3 { font-size: 35px; }
+  .work-info p { font-size: 13px; }
+  .work-info h4 { font-size: 15px; }
+  .work-box { width: 450px; padding: 50px; }
+  .work-flex { margin-left: -50px; padding-right: 75px; }
+  .work-section h2 { font-size: 50px; }
 }
 
 @media only screen and (max-width: 1025px) {
-  .work-container {
-    align-content: normal;
-  }
-  .work-flex {
-    height: auto;
-  }
+  .work-container { align-content: normal; }
+  .work-flex { height: auto; }
 }
 
 @media only screen and (max-height: 650px) {
-  .work-image img {
-    max-height: 200px;
-  }
-  .work-section h2 {
-    font-size: 40px;
-    margin-bottom: 20px;
-  }
-  .work-box {
-    gap: 20px;
-  }
+  .work-image img { max-height: 200px; }
+  .work-section h2 { font-size: 40px; margin-bottom: 20px; }
+  .work-box { gap: 20px; }
 }
 
-/* -------------------- Mobile Touch Fix -------------------- */
+/* Mobile adjustments (GSAP controls scroll, no swipe) */
 @media only screen and (max-width: 768px) {
-  .work-flex {
-    margin-left: 0;
-    padding-right: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-  }
-
   .work-box {
-    flex-shrink: 0;
     width: 280px;
     padding: 20px;
     gap: 15px;
     border-right: 1px solid #363636;
     margin: 0;
-  }
-
-  .work-section {
-    height: auto; /* JS controls exact height */
-    overflow-x: visible;
   }
 
   .work-section h2 {
