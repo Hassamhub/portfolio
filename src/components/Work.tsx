@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import WorkImage from "./WorkImage";
@@ -19,30 +19,30 @@ const Work = () => {
     { name: "Spelinx – Premium Gaming Platform", category: "Gaming Platform", tools: "Next.js (React), TypeScript, CSS, MongoDB", image: "/images/spel2.png" },
   ];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const section = sectionRef.current;
     const flex = flexRef.current;
 
     if (!section || !flex) return;
 
     let ctx = gsap.context(() => {
-      // 1. Calculate the real distance to scroll
+      // 1. Calculate the exact distance to scroll
+      // We subtract window.innerWidth so the last card stops exactly at the screen edge
       const getScrollAmount = () => {
         return -(flex.scrollWidth - window.innerWidth);
       };
 
       // 2. Create the horizontal scroll animation
-      // (Variable removed to fix 'never read' error)
       gsap.to(flex, {
         x: getScrollAmount,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${flex.scrollWidth}`, // Scroll duration matches content width
+          end: () => `+=${flex.scrollWidth}`, // The scroll length matches the content width
           pin: true,
-          scrub: 1, 
-          invalidateOnRefresh: true, 
+          scrub: 1, // Adds a 1-second delay for a smooth "weighty" feel
+          invalidateOnRefresh: true, // Recalculates completely on mobile resize
         },
       });
     }, section);
@@ -56,6 +56,7 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
+        
         <div className="work-flex" ref={flexRef}>
           {projects.map((project, index) => (
             <div className="work-box" key={index}>

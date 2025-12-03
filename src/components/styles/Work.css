@@ -1,91 +1,86 @@
 /* -------------------- Work Section -------------------- */
+.work-section {
+  position: relative;
+  height: 100vh;
+  height: 100dvh; /* FIX: Dynamic height for mobile address bars */
+  width: 100%;
+  overflow: hidden; /* FIX: Hides the native scrollbar */
+  background-color: var(--backgroundColor);
+  touch-action: pan-y; /* FIX: Allows vertical scroll on mobile */
+}
+
+.work-container {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center; /* Centers content vertically */
+}
+
 .work-section h2 {
-  margin-top: 50px; /* Reduced top margin so it fits better */
   font-size: 70px;
   font-weight: 500;
-  margin-left: 5vw; 
-  position: absolute; /* Keep title fixed at top */
-  top: 0;
-  left: 0;
-  z-index: 5;
+  margin-left: 5vw;
+  margin-bottom: 20px;
+  margin-top: 0;
 }
+
 .work-section h2 > span {
   color: var(--accentColor);
 }
 
-.work-section {
-  transition: 0s;
-  box-sizing: border-box;
-  will-change: transform;
-  
-  /* Dynamic height to fix mobile jumping */
-  height: 100vh;
-  height: 100dvh; 
-  
-  overflow: hidden; 
-  width: 100%;
-  position: relative;
-  touch-action: pan-y;
-  background-color: var(--backgroundColor);
-}
-
-.work-container {
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  align-content: stretch;
-  justify-content: center; /* Centers cards vertically in the screen */
-}
-
+/* -------------------- The Horizontal Strip -------------------- */
 .work-flex {
-  width: max-content; 
   display: flex;
-  height: 70%; 
-  padding-left: 5vw; 
+  flex-wrap: nowrap;      /* FIX: Prevents items from wrapping to next line */
+  
+  /* CRITICAL FIXES FOR MOBILE SQUISHING: */
+  width: fit-content;     
+  min-width: 100%;
+  max-width: none;        
+  
+  height: 70%;
+  padding-left: 5vw;
   padding-right: 10vw;
+  align-items: center;
   position: relative;
-  flex-wrap: nowrap; 
-  align-items: center; /* Ensures cards are centered vertically inside the strip */
 }
 
 .work-box {
+  flex-shrink: 0;         /* FIX: Prevents cards from shrinking on small screens */
   padding: 40px;
   display: flex;
   flex-direction: column;
-  width: 600px;
+  width: 600px;           /* Desktop Width */
+  height: 100%;
   box-sizing: border-box;
   border-right: 1px solid #363636;
-  flex-shrink: 0; 
   gap: 30px;
   justify-content: center;
-  height: 100%;
-  /* Ensure cards are visible */
-  background-color: transparent; 
 }
 
-/* Layout for Desktop */
+/* Alternating Layout for Desktop */
 .work-flex .work-box:nth-child(even) {
   flex-direction: column-reverse;
 }
 
-/* ---------------------------------------------------- */
-/* CRITICAL FIX HERE: CHANGED 50000vw TO 100%           */
-/* ---------------------------------------------------- */
+/* Decoration Lines (Fixed Width) */
 .work-flex::before,
 .work-flex::after {
   content: "";
-  width: 100%; /* Matches the width of your actual content */
+  width: 100%;            /* FIX: Matches actual content width, not 50000vw */
   height: 1px;
   background-color: #363636;
   position: absolute;
-  left: 0; 
+  left: 0;
   top: 0;
 }
 .work-flex::after {
   top: 100%;
 }
 
+/* -------------------- Card Typography & Images -------------------- */
 .work-title {
   justify-content: space-between;
   display: flex;
@@ -101,7 +96,6 @@
   margin: 0;
   font-weight: 600;
 }
-
 .work-info h4 {
   font-size: 18px;
   font-weight: 400;
@@ -121,8 +115,9 @@
   display: flex;
   width: 100%;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
+  position: relative;
 }
 
 .work-link {
@@ -149,50 +144,63 @@
   opacity: 1;
 }
 
-.work-image img {
-  max-width: 100%;
-  max-height: 350px;
-  object-fit: cover;
+.work-image video {
+  position: absolute;
   width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #000;
+  object-fit: cover;
+}
+
+.work-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  max-height: 350px;
+}
+.work-box:hover .work-image img {
+  transform: scale(1.05);
 }
 
 /* -------------------- Responsive Adjustments -------------------- */
+
+/* Laptop / Tablet */
+@media only screen and (max-width: 1400px) {
+  .work-box { width: 450px; padding: 30px; }
+  .work-section h2 { font-size: 50px; }
+  .work-title h3 { font-size: 35px; }
+}
+
 @media only screen and (max-height: 900px) {
   .work-image img { max-height: 250px; }
   .work-box { padding-top: 20px; padding-bottom: 20px; }
-  .work-section h2 { font-size: 60px; }
 }
 
-@media only screen and (max-width: 1400px) {
-  .work-title h3 { font-size: 35px; }
-  .work-info p { font-size: 13px; }
-  .work-info h4 { font-size: 15px; }
-  .work-box { width: 450px; padding: 30px; }
-  .work-section h2 { font-size: 50px; }
-}
-
+/* Mobile Devices */
 @media only screen and (max-width: 768px) {
   .work-section h2 {
     font-size: 32px;
     margin-left: 20px;
-    margin-top: 20px;
-    position: relative; /* On mobile, let title scroll naturally if needed, or keep absolute */
   }
-
+  
   .work-flex {
-    height: 70%;
+    height: 65%;
     padding-left: 20px;
   }
 
   .work-box {
-    width: 85vw; /* CRITICAL MOBILE WIDTH */
+    /* FIX: Cards take 85% of mobile screen width */
+    width: 85vw; 
+    margin-right: 20px;
     padding: 20px;
     gap: 15px;
-    border-right: 1px solid #363636;
-    margin-right: 15px; 
   }
-
+  
+  /* Disable alternating layout on mobile for consistency */
   .work-flex .work-box:nth-child(even) {
-    flex-direction: column;
+    flex-direction: column; 
   }
 }
