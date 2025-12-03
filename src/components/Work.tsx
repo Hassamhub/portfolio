@@ -7,9 +7,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
-  // -----------------------------------
-  // ⭐ 6 UNIQUE PROJECTS (EDIT ANY TIME)
-  // -----------------------------------
   const projects = [
     {
       name: "Cassie.codes",
@@ -19,7 +16,7 @@ const Work = () => {
     },
     {
       name: "Patch Specialist",
-      category: "Business / E‑commerce Website",
+      category: "Business / E-commerce Website",
       tools: "Next.js, Stripe API",
       image: "/images/patchspecialist.com.png",
     },
@@ -49,74 +46,76 @@ const Work = () => {
     },
   ];
 
-  // -----------------------------------
-  // ⭐ GSAP SCROLL ANIMATION (UNCHANGED)
-  // -----------------------------------
   useEffect(() => {
-    const workSection = document.querySelector(".work-section");
-    const workFlex = document.querySelector(".work-flex");
+    const section = document.querySelector(".work-section") as HTMLElement;
+    const flex = document.querySelector(".work-flex") as HTMLElement;
+    const boxes = Array.from(
+      document.querySelectorAll(".work-box")
+    ) as HTMLElement[];
 
-    if (!workSection || !workFlex) return;
+    if (!section || !flex) return;
 
-    const boxes = document.querySelectorAll(".work-box");
+    const setup = () => {
+      // Kill old triggers
+      ScrollTrigger.getAll().forEach((st) => st.kill());
 
-    const setupAnimation = () => {
+      // -------------------------
+      // 📱 MOBILE BEHAVIOR (<900px)
+      // -------------------------
       if (window.innerWidth < 900) {
-        (workFlex as HTMLElement).style.width = "100%";
-        ScrollTrigger.getAll().forEach((st) => st.kill());
+        // expand flex horizontally (same as desktop width calc)
+        const totalWidth = boxes.reduce((acc, box) => {
+          const style = getComputedStyle(box);
+          const margin =
+            parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+          return acc + box.offsetWidth + margin;
+        }, 0);
+
+        flex.style.width = `${totalWidth}px`;
+
+        // IMPORTANT: no overflow-x on the section (let the page continue)
+        section.style.overflow = "visible";
+
+        // no pinning, no horizontal scroll by GSAP
         return;
       }
 
-      const containerStyle = window.getComputedStyle(workSection);
-      const containerPaddingLeft = parseFloat(containerStyle.paddingLeft) || 0;
-
-      let totalWidth = 0;
-
-      boxes.forEach((box) => {
-        const htmlBox = box as HTMLElement;
-        const style = window.getComputedStyle(htmlBox);
+      // -------------------------
+      // 🖥 DESKTOP — GSAP horizontal scrolling
+      // -------------------------
+      const totalWidth = boxes.reduce((acc, box) => {
+        const style = getComputedStyle(box);
         const margin =
           parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-        totalWidth += htmlBox.offsetWidth + margin;
-      });
+        return acc + box.offsetWidth + margin;
+      }, 0);
 
-      totalWidth -= containerPaddingLeft / 2;
+      flex.style.width = `${totalWidth}px`;
 
-      const leftOffset = 0;
-      totalWidth -= leftOffset;
+      const scrollDistance = totalWidth - section.clientWidth;
 
-      (workFlex as HTMLElement).style.width = `${totalWidth}px`;
-
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-
-      gsap.to(workFlex, {
-        x: () => `-${totalWidth - workSection.clientWidth}px`,
+      gsap.to(flex, {
+        x: -scrollDistance,
         ease: "none",
         scrollTrigger: {
-          trigger: workSection,
+          trigger: section,
           start: "top top",
-          end: () => `+=${totalWidth - workSection.clientWidth}`,
+          end: `+=${scrollDistance}`,
           scrub: true,
           pin: true,
-          pinSpacing: true,
         },
       });
     };
 
-    setupAnimation();
-
-    const handleResize = () => setupAnimation();
-    window.addEventListener("resize", handleResize);
+    setup();
+    window.addEventListener("resize", setup);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", setup);
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
 
-  // -----------------------------------
-  // ⭐ UI SECTION (CSS CLASSNAMES SAME)
-  // -----------------------------------
   return (
     <div className="work-section" id="work">
       <div className="work-container section-container">
@@ -135,11 +134,9 @@ const Work = () => {
                     <p>{project.category}</p>
                   </div>
                 </div>
-
                 <h4>Tools and features</h4>
                 <p>{project.tools}</p>
               </div>
-
               <WorkImage image={project.image} alt={project.name} />
             </div>
           ))}
