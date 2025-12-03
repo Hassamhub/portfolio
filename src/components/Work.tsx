@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import WorkImage from "./WorkImage";
@@ -9,6 +9,9 @@ gsap.registerPlugin(ScrollTrigger);
 const Work = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const flexRef = useRef<HTMLDivElement>(null);
+  
+  // This state ensures we trigger a re-render if needed
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const projects = [
     { name: "Cassie.codes", category: "Personal portfolio", tools: "React, Three.js, GSAP", image: "/images/cassie.png" },
@@ -24,66 +27,64 @@ const Work = () => {
     const flex = flexRef.current;
     if (!section || !flex) return;
 
-    let ctx = gsap.context(() => {
-      // --------------------------------------------------------
-      // THE FIX: PRECISE CALCULATION + SAFETY BRAKE
-      // --------------------------------------------------------
-      const getScrollAmount = () => {
-        // Ensure we get a valid width even if loading screen is active
-        let raceWidth = window.innerWidth;
-        if (raceWidth === 0) raceWidth = document.documentElement.clientWidth;
+    let ctx: gsap.Context;
 
-        const isMobile = raceWidth <= 768;
+    // --------------------------------------------------------
+    // THE FIX: DELAYED INITIALIZATION
+    // We wait 2000ms (2 seconds) to ensure your Loading Screen 
+    // is finished and the DOM is fully stable before measuring.
+    // --------------------------------------------------------
+    const timer = setTimeout(() => {
+      
+      ctx = gsap.context(() => {
+        // 1. Get the precise scroll distance from the browser
+        // Now that we waited, 'scrollWidth' will be 100% correct.
+        const getScrollAmount = () => {
+          let distance = flex.scrollWidth - window.innerWidth;
+          
+          // Safety Check: If for some reason it's still 0, force a mobile calculation
+          if (distance <= 0) {
+             const cardWidth = window.innerWidth * 0.85 + 20; // 85vw + gap
+             distance = (cardWidth * projects.length) - window.innerWidth;
+          }
+          
+          return -Math.max(0, distance);
+        };
 
-        // 1. Define sizes exactly as they appear in CSS
-        const cardWidth = isMobile ? (raceWidth * 0.85) : 600;
-        const cardGap = isMobile ? 20 : 0; // Mobile has 20px gap, Desktop has 0 (borders)
-        const containerPaddingLeft = 20; // Mobile padding-left is 20px
+        const scrollDistance = getScrollAmount();
 
-        // 2. Calculate the TRUE width of the content strip
-        // (6 Cards) + (5 Gaps) + (Initial Padding)
-        const totalContentWidth = 
-          (projects.length * cardWidth) + 
-          ((projects.length - 1) * cardGap) + 
-          containerPaddingLeft;
+        // 2. Create the Animation
+        gsap.fromTo(
+          flex,
+          { x: 0 },
+          {
+            x: scrollDistance,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: () => `+=${Math.abs(scrollDistance)}`,
+              pin: true,
+              scrub: 1,
+              invalidateOnRefresh: true, // Handle resize events
+            },
+          }
+        );
 
-        // 3. Calculate Scroll Distance
-        // We want to move left until the end of content aligns with right of screen.
-        // Formula: Content Width - Visible Screen Width
-        let distance = totalContentWidth - raceWidth;
+        // 3. FORCE REFRESH
+        // This tells ScrollTrigger: "Hey, layout just changed, remeasure everything!"
+        ScrollTrigger.refresh();
+        
+      }, section);
 
-        // 4. SAFETY BRAKE (Critical Fix)
-        // On mobile, we reduce the distance by 50px to stop slightly EARLY.
-        // This ensures we never scroll into the empty black void.
-        if (isMobile) {
-            distance = distance - 50; 
-        }
+      setIsLoaded(true);
 
-        // Return negative value to move left
-        return -Math.max(0, distance);
-      };
+    }, 2500); // 2.5 second delay to be safe. Adjust if your loader is longer.
 
-      const scrollDistance = getScrollAmount;
-
-      gsap.fromTo(
-        flex,
-        { x: 0 },
-        {
-          x: scrollDistance,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top top", 
-            end: () => `+=${Math.abs(scrollDistance())}`, // Duration matches distance
-            pin: true,
-            scrub: 1,
-            invalidateOnRefresh: true, 
-          },
-        }
-      );
-    }, section);
-
-    return () => ctx.revert();
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
   }, [projects]);
 
   return (
@@ -92,7 +93,12 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
-        <div className="work-flex" ref={flexRef}>
+        {/* We use opacity to prevent visual glitches before animation starts */}
+        <div 
+          className="work-flex" 
+          ref={flexRef} 
+          style={{ opacity: isLoaded ? 1 : 0, transition: "opacity 0.5s" }}
+        >
           {projects.map((project, index) => (
             <div className="work-box" key={index}>
               <div className="work-info">

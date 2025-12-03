@@ -2,11 +2,11 @@
 .work-section {
   position: relative;
   height: 100vh;
-  height: 100dvh; /* Mobile Fix: Dynamic viewport height */
+  height: 100dvh; /* Mobile browser fix */
   width: 100%;
   overflow: hidden;
-  background-color: var(--backgroundColor, #111); /* Fallback color added */
-  touch-action: pan-y; /* Allows vertical scroll to trigger animation */
+  background-color: var(--backgroundColor);
+  touch-action: pan-y;
 }
 
 .work-container {
@@ -31,13 +31,13 @@
 }
 
 .work-section h2 > span {
-  color: var(--accentColor, #d4a373);
+  color: var(--accentColor);
 }
 
 /* -------------------- The Moving Strip -------------------- */
 .work-flex {
   display: flex;
-  flex-wrap: nowrap; /* Forces horizontal layout */
+  flex-wrap: nowrap;
   height: 70%;
   padding-left: 5vw;
   padding-right: 10vw;
@@ -45,17 +45,15 @@
   position: relative;
   margin-top: 5vh;
   box-sizing: border-box;
-  
-  /* CRITICAL: Allows JS to measure the true width of the content */
-  width: fit-content; 
+  width: fit-content; /* Critical for measurement */
 }
 
 .work-box {
-  flex-shrink: 0; /* Prevents squishing */
+  flex-shrink: 0;
   padding: 40px;
   display: flex;
   flex-direction: column;
-  width: 600px; /* Desktop Size */
+  width: 600px; /* Desktop width */
   height: 100%;
   box-sizing: border-box;
   border-right: 1px solid #363636;
@@ -82,7 +80,7 @@
   top: 100%;
 }
 
-/* -------------------- Typography & Images -------------------- */
+/* -------------------- Typography -------------------- */
 .work-title {
   justify-content: space-between;
   display: flex;
@@ -127,7 +125,7 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background-color: var(--backgroundColor, #111);
+  background-color: var(--backgroundColor);
   width: 50px;
   border-radius: 50px;
   height: 50px;
@@ -135,13 +133,9 @@
   justify-content: center;
   align-items: center;
   font-size: 25px;
-  box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.5),
-    inset 0px 0px 10px 0px #393939;
+  box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.5), inset 0px 0px 10px 0px #393939;
   transition: 0.3s;
   opacity: 0;
-}
-.work-image a:hover {
-  color: inherit;
 }
 .work-image a:hover .work-link {
   opacity: 1;
@@ -157,7 +151,7 @@
   transform: scale(1.05);
 }
 
-/* -------------------- Responsive Adjustments -------------------- */
+/* -------------------- Responsive -------------------- */
 @media only screen and (max-width: 1400px) {
   .work-box { width: 450px; padding: 30px; }
   .work-section h2 { font-size: 50px; }
@@ -184,8 +178,7 @@
   }
 
   .work-box {
-    /* Mobile width logic */
-    width: 85vw; 
+    width: 85vw; /* Safe mobile width */
     margin-right: 20px;
     padding: 20px;
     gap: 15px;
