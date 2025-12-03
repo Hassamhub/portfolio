@@ -54,7 +54,8 @@ const Work = () => {
     if (!section || !flex || boxes.length === 0) return;
 
     const setupScroll = () => {
-      ScrollTrigger.getAll().forEach(st => st.kill());
+      // Kill previous ScrollTriggers
+      ScrollTrigger.getAll().forEach((st) => st.kill());
 
       // Calculate total width including margins
       const totalWidth = boxes.reduce((acc, box) => {
@@ -67,6 +68,7 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
+      // GSAP horizontal scroll for all devices
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
@@ -78,10 +80,6 @@ const Work = () => {
           pin: true,
           pinSpacing: true,
           invalidateOnRefresh: true,
-          // Enable touch support for mobile
-          onUpdate: self => {
-            flex.style.transform = `translateX(${self.animation?.progress()! * -scrollDistance}px)`;
-          },
         },
       });
     };
@@ -91,7 +89,7 @@ const Work = () => {
 
     return () => {
       window.removeEventListener("resize", setupScroll);
-      ScrollTrigger.getAll().forEach(st => st.kill());
+      ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
 
