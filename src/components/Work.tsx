@@ -49,20 +49,17 @@ const Work = () => {
   useEffect(() => {
     const section = document.querySelector(".work-section") as HTMLElement;
     const flex = document.querySelector(".work-flex") as HTMLElement;
-    const boxes = Array.from(
-      document.querySelectorAll(".work-box")
-    ) as HTMLElement[];
+    const boxes = Array.from(document.querySelectorAll(".work-box")) as HTMLElement[];
 
     if (!section || !flex || boxes.length === 0) return;
 
     const setup = () => {
       ScrollTrigger.getAll().forEach((st) => st.kill());
 
-      // Calculate full width (same behaviour on mobile + desktop)
+      // Calculate full width of all boxes
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
-        const margin =
-          parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+        const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
         return acc + box.offsetWidth + margin;
       }, 0);
 
@@ -70,7 +67,7 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
-      // Horizontal GSAP scroll on ALL devices
+      // Horizontal scroll with GSAP
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
