@@ -36,10 +36,10 @@ const Work = () => {
 
       let scrollDistance = totalWidth - section.clientWidth;
 
-      // On mobile, make sure scrollDistance is enough
+      // 🔥 FIX: Ensure enough vertical height on mobile
       if (window.innerWidth <= 768) {
-        scrollDistance = Math.max(scrollDistance, window.innerWidth * 1.2); // ensure some scroll
-        section.style.height = `${scrollDistance + window.innerHeight}px`;
+        const minHeight = scrollDistance + window.innerHeight * 1.5; // more scroll space
+        section.style.height = `${minHeight}px`;
       } else {
         section.style.height = "100vh";
       }
@@ -52,7 +52,7 @@ const Work = () => {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: `+=${scrollDistance}`,
+          end: () => `+=${scrollDistance}`,
           scrub: 0.5,
           pin: true,
           pinSpacing: true,
