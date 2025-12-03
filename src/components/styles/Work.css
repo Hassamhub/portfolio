@@ -2,7 +2,7 @@
 .work-section {
   position: relative;
   height: 100vh;
-  height: 100dvh; /* Mobile browser fix */
+  height: 100dvh; /* Mobile Fix */
   width: 100%;
   overflow: hidden;
   background-color: var(--backgroundColor);
@@ -45,7 +45,9 @@
   position: relative;
   margin-top: 5vh;
   box-sizing: border-box;
-  width: fit-content; /* Critical for measurement */
+  
+  /* UPDATED: max-content forces it to be full width always */
+  width: max-content; 
 }
 
 .work-box {
@@ -53,7 +55,10 @@
   padding: 40px;
   display: flex;
   flex-direction: column;
-  width: 600px; /* Desktop width */
+  
+  /* Desktop Size */
+  width: 600px; 
+  
   height: 100%;
   box-sizing: border-box;
   border-right: 1px solid #363636;
@@ -65,7 +70,7 @@
   flex-direction: column-reverse;
 }
 
-/* Decoration Lines */
+/* Decoration Line */
 .work-flex::before,
 .work-flex::after {
   content: "";
@@ -80,7 +85,7 @@
   top: 100%;
 }
 
-/* -------------------- Typography -------------------- */
+/* -------------------- Typography & Images -------------------- */
 .work-title {
   justify-content: space-between;
   display: flex;
@@ -133,9 +138,13 @@
   justify-content: center;
   align-items: center;
   font-size: 25px;
-  box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.5), inset 0px 0px 10px 0px #393939;
+  box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.5),
+    inset 0px 0px 10px 0px #393939;
   transition: 0.3s;
   opacity: 0;
+}
+.work-image a:hover {
+  color: inherit;
 }
 .work-image a:hover .work-link {
   opacity: 1;
@@ -151,7 +160,7 @@
   transform: scale(1.05);
 }
 
-/* -------------------- Responsive -------------------- */
+/* -------------------- Responsive Adjustments -------------------- */
 @media only screen and (max-width: 1400px) {
   .work-box { width: 450px; padding: 30px; }
   .work-section h2 { font-size: 50px; }
@@ -178,7 +187,7 @@
   }
 
   .work-box {
-    width: 85vw; /* Safe mobile width */
+    width: 85vw; 
     margin-right: 20px;
     padding: 20px;
     gap: 15px;
