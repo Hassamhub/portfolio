@@ -7,7 +7,7 @@ import "./styles/Work.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
-  // FIXED: Added <HTMLDivElement> back so TypeScript knows these are HTML elements
+  // 1. Explicit Types for TypeScript to prevent 'never' error
   const sectionRef = useRef<HTMLDivElement>(null);
   const flexRef = useRef<HTMLDivElement>(null);
 
@@ -24,28 +24,32 @@ const Work = () => {
     const section = sectionRef.current;
     const flex = flexRef.current;
 
-    // Safety check: ensure elements exist before running animation
     if (!section || !flex) return;
 
     let ctx = gsap.context(() => {
-      // Calculate scroll distance based on the container's natural width
-      // We use flex.scrollWidth (total width) minus window.innerWidth (visible width)
+      // 2. We use a function to calculate distance so it works even if
+      // the page starts hidden or with a loader.
       const getScrollAmount = () => {
-        return -(flex.scrollWidth - window.innerWidth);
+        // "scrollWidth" is the total length of the strip
+        // "innerWidth" is the screen width
+        // We subtract them to know how far to move left
+        let amount = flex.scrollWidth - window.innerWidth;
+        return -(amount); 
       };
 
-      const scrollDistance = getScrollAmount();
-
       gsap.to(flex, {
-        x: scrollDistance,
+        // FIXED: Use a function () => ... here. 
+        // This forces GSAP to re-calculate the width every time the page refreshes/resizes.
+        x: () => getScrollAmount(),
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${Math.abs(scrollDistance)}`,
+          // FIXED: Recalculate the end point dynamically too
+          end: () => `+=${Math.abs(getScrollAmount())}`,
           pin: true,
           scrub: 1,
-          invalidateOnRefresh: true,
+          invalidateOnRefresh: true, // IMPORTANT: invalidates values on resize to fix mobile glitches
         },
       });
     }, section);

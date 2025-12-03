@@ -2,11 +2,11 @@
 .work-section {
   position: relative;
   height: 100vh;
-  height: 100dvh; /* Mobile Fix for Safari toolbar */
+  height: 100dvh; /* Mobile Fix: Dynamic viewport height */
   width: 100%;
   overflow: hidden;
-  background-color: var(--backgroundColor);
-  touch-action: pan-y;
+  background-color: var(--backgroundColor, #111); /* Fallback color added */
+  touch-action: pan-y; /* Allows vertical scroll to trigger animation */
 }
 
 .work-container {
@@ -31,35 +31,31 @@
 }
 
 .work-section h2 > span {
-  color: var(--accentColor);
+  color: var(--accentColor, #d4a373);
 }
 
 /* -------------------- The Moving Strip -------------------- */
 .work-flex {
   display: flex;
-  flex-wrap: nowrap; /* Ensures items stay in a single row */
+  flex-wrap: nowrap; /* Forces horizontal layout */
   height: 70%;
   padding-left: 5vw;
-  padding-right: 10vw; /* Adds buffer at the end of scroll */
+  padding-right: 10vw;
   align-items: center;
   position: relative;
   margin-top: 5vh;
   box-sizing: border-box;
   
-  /* CRITICAL FIX: This lets the container grow horizontally 
-     based on the number of projects you have. */
+  /* CRITICAL: Allows JS to measure the true width of the content */
   width: fit-content; 
 }
 
 .work-box {
-  flex-shrink: 0; /* Prevents the box from being squished */
+  flex-shrink: 0; /* Prevents squishing */
   padding: 40px;
   display: flex;
   flex-direction: column;
-  
-  /* Default Desktop Size */
-  width: 600px; 
-  
+  width: 600px; /* Desktop Size */
   height: 100%;
   box-sizing: border-box;
   border-right: 1px solid #363636;
@@ -71,7 +67,7 @@
   flex-direction: column-reverse;
 }
 
-/* Decoration Line */
+/* Decoration Lines */
 .work-flex::before,
 .work-flex::after {
   content: "";
@@ -131,7 +127,7 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background-color: var(--backgroundColor);
+  background-color: var(--backgroundColor, #111);
   width: 50px;
   border-radius: 50px;
   height: 50px;
@@ -188,7 +184,8 @@
   }
 
   .work-box {
-    width: 85vw; /* Sets width relative to mobile screen */
+    /* Mobile width logic */
+    width: 85vw; 
     margin-right: 20px;
     padding: 20px;
     gap: 15px;
