@@ -53,10 +53,10 @@ const Work = () => {
 
     if (!section || !flex || boxes.length === 0) return;
 
-    const setup = () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+    const setupScroll = () => {
+      ScrollTrigger.getAll().forEach(st => st.kill());
 
-      // Calculate full width of all boxes
+      // Calculate total width including margins
       const totalWidth = boxes.reduce((acc, box) => {
         const style = getComputedStyle(box);
         const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
@@ -67,7 +67,6 @@ const Work = () => {
 
       const scrollDistance = totalWidth - section.clientWidth;
 
-      // Horizontal scroll with GSAP
       gsap.to(flex, {
         x: -scrollDistance,
         ease: "none",
@@ -75,19 +74,24 @@ const Work = () => {
           trigger: section,
           start: "top top",
           end: `+=${scrollDistance}`,
-          scrub: true,
+          scrub: 0.5,
           pin: true,
           pinSpacing: true,
+          invalidateOnRefresh: true,
+          // Enable touch support for mobile
+          onUpdate: self => {
+            flex.style.transform = `translateX(${self.animation?.progress()! * -scrollDistance}px)`;
+          },
         },
       });
     };
 
-    setup();
-    window.addEventListener("resize", setup);
+    setupScroll();
+    window.addEventListener("resize", setupScroll);
 
     return () => {
-      window.removeEventListener("resize", setup);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+      window.removeEventListener("resize", setupScroll);
+      ScrollTrigger.getAll().forEach(st => st.kill());
     };
   }, []);
 
