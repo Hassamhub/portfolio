@@ -2,7 +2,7 @@
 .work-section {
   position: relative;
   height: 100vh;
-  height: 100dvh; /* Mobile Fix */
+  height: 100dvh; /* Mobile Fix for dynamic height */
   width: 100%;
   overflow: hidden;
   background-color: var(--backgroundColor);
@@ -43,10 +43,12 @@
   padding-right: 10vw;
   align-items: center;
   position: relative;
-  margin-top: 5vh;
-  box-sizing: border-box;
   
-  /* UPDATED: max-content forces it to be full width always */
+  /* FIXED: Increased margin prevents overlap with "My Work" title */
+  margin-top: 15vh; 
+  
+  box-sizing: border-box;
+  /* FIXED: max-content ensures it doesn't collapse to 0 width */
   width: max-content; 
 }
 
@@ -70,7 +72,7 @@
   flex-direction: column-reverse;
 }
 
-/* Decoration Line */
+/* Decoration Lines */
 .work-flex::before,
 .work-flex::after {
   content: "";
@@ -162,6 +164,7 @@
 
 /* -------------------- Responsive Adjustments -------------------- */
 @media only screen and (max-width: 1400px) {
+  /* Matches JS Logic */
   .work-box { width: 450px; padding: 30px; }
   .work-section h2 { font-size: 50px; }
   .work-title h3 { font-size: 35px; }
@@ -183,7 +186,8 @@
   .work-flex {
     height: 75%;
     padding-left: 20px;
-    margin-top: 60px;
+    /* Increased margin to fix text overlap */
+    margin-top: 80px; 
   }
 
   .work-box {

@@ -7,7 +7,7 @@ import "./styles/Work.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
-  // FIXED: Added <HTMLDivElement> to solve the "type 'never'" error from your screenshot
+  // FIXED: <HTMLDivElement> prevents the "type never" error
   const sectionRef = useRef<HTMLDivElement>(null);
   const flexRef = useRef<HTMLDivElement>(null);
 
@@ -26,53 +26,65 @@ const Work = () => {
     if (!section || !flex) return;
 
     let ctx = gsap.context(() => {
-      // 1. Dynamic Calculation Function
-      // We use a function so we can re-calculate if the screen size changes
+      // --------------------------------------------------------
+      // THE FIX: PURE MATH CALCULATION
+      // We calculate the width manually. This makes it "Bulletproof"
+      // because it works even if the loading screen is hiding the elements.
+      // --------------------------------------------------------
       const getScrollAmount = () => {
-        // Calculate the width of the scrolling content minus the window width
-        let amount = flex.scrollWidth - window.innerWidth;
+        const raceWidth = window.innerWidth;
         
-        // Safety fix: If it calculates as 0 (due to loading screen), 
-        // fallback to a manual calculation based on your CSS
-        if (amount <= 0) {
-           const isMobile = window.innerWidth <= 768;
-           const cardWidth = isMobile ? window.innerWidth * 0.85 : 600;
-           const gap = isMobile ? 20 : 30; // 20px gap on mobile, 30px implicit on desktop
-           const totalWidth = (projects.length * cardWidth) + ((projects.length - 1) * gap) + 50;
-           amount = totalWidth - window.innerWidth;
+        // 1. Define sizes exactly as they appear in your CSS
+        let cardWidth = 600; // Desktop default
+        let cardGap = 30;    // Desktop default
+        
+        // Match CSS Media Queries Logic
+        if (raceWidth <= 768) {
+            // Mobile (matches CSS: width 85vw)
+            cardWidth = raceWidth * 0.85;
+            cardGap = 20;
+        } else if (raceWidth <= 1400) {
+            // Laptop (matches CSS: width 450px)
+            cardWidth = 450;
+            cardGap = 30;
         }
 
-        return -Math.max(0, amount);
+        // 2. Calculate the TRUE width of the content strip
+        // Formula: (Cards * Width) + (Gaps * GapSize) + (End Padding Buffer)
+        const totalContentWidth = 
+          (projects.length * cardWidth) + 
+          ((projects.length - 1) * cardGap) + 
+          (raceWidth * 0.1); // 10% buffer for right padding
+
+        // 3. Calculate how far we need to move left
+        const distance = totalContentWidth - raceWidth;
+
+        // Return negative value to move left. Max(0) prevents errors on huge screens.
+        return -Math.max(0, distance);
       };
 
-      // 2. The Animation
+      // 4. Create the Animation
+      const amount = getScrollAmount();
+      
       gsap.fromTo(
         flex,
         { x: 0 },
         {
-          x: () => getScrollAmount(), // Use function for dynamic values
+          x: amount, // Use the calculated math value
           ease: "none",
           scrollTrigger: {
             trigger: section,
-            start: "top top",
-            end: () => `+=${Math.abs(getScrollAmount())}`,
+            start: "top top", 
+            // The duration of the pin is exactly equal to the scroll distance
+            end: () => `+=${Math.abs(amount)}`, 
             pin: true,
             scrub: 1,
-            invalidateOnRefresh: true, // Critical for mobile resize
+            // We set invalidateOnRefresh to true, but we DO NOT use a ResizeObserver
+            // This prevents the mobile "jump" when the address bar hides.
+            invalidateOnRefresh: true, 
           },
         }
       );
-
-      // 3. THE FIX: ResizeObserver
-      // This watches the element. As soon as the Loading Screen vanishes
-      // and the element gets its real width, this triggers a refresh.
-      const observer = new ResizeObserver(() => {
-        ScrollTrigger.refresh();
-      });
-      observer.observe(flex);
-
-      // Cleanup observer when component unmounts
-      return () => observer.disconnect();
 
     }, section);
 
